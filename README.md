@@ -1,7 +1,7 @@
 # n64-asm-timing
 
-N64 CPU Instruction Timing (NTSC) using CP0 Count Register
-Based heavily on N64 'Bare Metal' CPU Instruction Timing (NTSC) Test Demo by krom (Peter Lemon).
+N64 CPU Instruction Timing (NTSC) using CP0 Count Register. Based heavily on N64 'Bare Metal' 
+CPU Instruction Timing (NTSC) Test Demo by krom (Peter Lemon).
 
 https://github.com/PeterLemon/N64/tree/master/CPUTest/CPU/TIMINGNTSC
 
