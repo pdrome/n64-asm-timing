@@ -1,5 +1,5 @@
 // Evaluating VI_V_CURRENT_LINE output based on CP0 Count Register by pdrome
-// Based heavily on N64 'Bare Metal' CPU Instruction Timing (NTSC) Test Demo by krom (Peter Lemon):
+// Based heavily on N64 'Bare Metal' CPU Instruction Timing (PAL) Test Demo by krom (Peter Lemon):
 arch n64.cpu
 endian msb
 output "VI_CURRENT_REG_TEST.N64", create
@@ -140,7 +140,7 @@ Start:
   include "LIB/N64_GFX.INC" // Include Graphics Macros
   N64_INIT() // Run N64 Initialisation Routine
 
-  ScreenNTSC(640, 480, BPP32|INTERLACE|AA_MODE_2, $A0100000) // Screen NTSC: 640x480, 32BPP, Interlace, Resample Only, DRAM Origin = $A0100000
+  ScreenPAL(640, 480, BPP32|INTERLACE|AA_MODE_2, $A0100000) // Screen PAL: 640x480, 32BPP, Interlace, Resample Only, DRAM Origin = $A0100000
 
   lui a0,$A010 // A0 = VRAM Start Offset
   la a1,$A0100000+((SCREEN_X*SCREEN_Y*BYTES_PER_PIXEL)-BYTES_PER_PIXEL) // A1 = VRAM End Offset

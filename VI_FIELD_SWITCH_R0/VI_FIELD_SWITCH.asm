@@ -10,8 +10,8 @@ constant SCREEN_Y(480)
 constant BYTES_PER_PIXEL(4)
 
 // Setup Characters
-constant CHAR_X(8)
-constant CHAR_Y(8)
+constant CHAR_X(16)
+constant CHAR_Y(16)
 
 origin $00000000
 base $80000000 // Entry Point Of Code
@@ -31,7 +31,7 @@ macro PrintString(vram, xpos, ypos, fontfile, string, length) { // Print Text St
     lb t3,0(a2) // T3 = Next Text Character
     addi a2,1
 
-    sll t3,8 // Add Shift to Correct Position in Font (*256: CHAR_X*CHAR_Y*BYTES_PER_PIXEL)
+    sll t3,10 // Add Shift to Correct Position in Font (*256: CHAR_X*CHAR_Y*BYTES_PER_PIXEL)
     add t3,a1
 
     {#}DrawCharX:
@@ -48,7 +48,8 @@ macro PrintString(vram, xpos, ypos, fontfile, string, length) { // Print Text St
       bnez t2,{#}DrawCharX // IF (Character Y Pixel Counter != 0) DrawCharX
       subi t2,1 // Decrement Character Y Pixel Counter
 
-    subi a0,((SCREEN_X*BYTES_PER_PIXEL)*CHAR_Y)-CHAR_X*BYTES_PER_PIXEL // Jump To Start Of Next Char
+    li t5,((SCREEN_X*BYTES_PER_PIXEL)*CHAR_Y)-CHAR_X*BYTES_PER_PIXEL // Jump To Start Of Next Char
+    sub a0,t5 // Jump To Start Of Next Char
     bnez t0,{#}DrawChars // Continue to Print Characters
     subi t0,1 // Subtract Number of Text Characters to Print
 }
@@ -77,7 +78,7 @@ macro PrintValue(vram, xpos, ypos, fontfile, value, length) { // Print HEX Chars
     addi t4,7
     {#}HEXEnd:
 
-    sll t4,8 // Add Shift to Correct Position in Font (*256: CHAR_X*CHAR_Y*BYTES_PER_PIXEL)
+    sll t4,10 // Add Shift to Correct Position in Font (*256: CHAR_X*CHAR_Y*BYTES_PER_PIXEL)
     add t4,a1
 
     {#}DrawHEXCharX:
@@ -94,7 +95,8 @@ macro PrintValue(vram, xpos, ypos, fontfile, value, length) { // Print HEX Chars
       bnez t2,{#}DrawHEXCharX // IF (Character Y Pixel Counter != 0) DrawCharX
       subi t2,1 // Decrement Character Y Pixel Counter
 
-    subi a0,((SCREEN_X*BYTES_PER_PIXEL)*CHAR_Y)-CHAR_X*BYTES_PER_PIXEL // Jump To Start Of Next Char
+    li t6,((SCREEN_X*BYTES_PER_PIXEL)*CHAR_Y)-CHAR_X*BYTES_PER_PIXEL // Jump To Start Of Next Char
+    sub a0,t6 // Jump To Start Of Next Char
 
     lli t2,CHAR_Y-1 // Reset Character Y Pixel Counter
 
@@ -109,7 +111,7 @@ macro PrintValue(vram, xpos, ypos, fontfile, value, length) { // Print HEX Chars
     addi t4,7
     {#}HEXEndB:
 
-    sll t4,8 // Add Shift to Correct Position in Font (*256: CHAR_X*CHAR_Y*BYTES_PER_PIXEL)
+    sll t4,10 // Add Shift to Correct Position in Font (*256: CHAR_X*CHAR_Y*BYTES_PER_PIXEL)
     add t4,a1
 
     {#}DrawHEXCharXB:
@@ -126,7 +128,8 @@ macro PrintValue(vram, xpos, ypos, fontfile, value, length) { // Print HEX Chars
       bnez t2,{#}DrawHEXCharXB // IF (Character Y Pixel Counter != 0) DrawCharX
       subi t2,1 // Decrement Character Y Pixel Counter
 
-    subi a0,((SCREEN_X*BYTES_PER_PIXEL)*CHAR_Y)-CHAR_X*BYTES_PER_PIXEL // Jump To Start Of Next Char
+    li t6,((SCREEN_X*BYTES_PER_PIXEL)*CHAR_Y)-CHAR_X*BYTES_PER_PIXEL // Jump To Start Of Next Char
+    sub a0,t6 // Jump To Start Of Next Char
 
     bnez t0,{#}DrawHEXChars // Continue to Print Characters
     subi t0,1 // Subtract Number of Text Characters to Print
@@ -148,10 +151,10 @@ ClearScreen:
 
 
 
-  PrintString($A0100000,0,16,FontBlack,PAGEBREAK,79) // Print Text String To VRAM Using Font At X,Y Position
+  PrintString($A0100000,0,16,FontBlack,PAGEBREAK,39) // Print Text String To VRAM Using Font At X,Y Position
 
 
-  PrintString($A0100000,32,24,FontRed,FIELD1,6) // Print Text String To VRAM Using Font At X,Y Position
+  PrintString($A0100000,16,32,FontRed,FIELD1,6) // Print Text String To VRAM Using Font At X,Y Position
   lli t0,0 // T0 = Instruction Count
   la t1,VALUEWORDA // T1 = Word Data Offset
   lw t1,0(t1)      // T1 = Word Data
@@ -245,33 +248,33 @@ ClearScreen:
   sw t0,0(t1) // COUNTWORD = Word Data
 
   //
-  PrintString($A0100000,140,24,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,148,24,FontBlack,COUNTWORD1,3) // Print HEX Chars To VRAM Using Font At X,Y Position
-  //
-  PrintString($A0100000,240,24,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,248,24,FontBlack,COUNTWORD2,3) // Print HEX Chars To VRAM Using Font At X,Y Position
-  //
-  PrintString($A0100000,340,24,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,348,24,FontBlack,COUNTWORD3,3) // Print HEX Chars To VRAM Using Font At X,Y Position
-  //
-  PrintString($A0100000,440,24,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,448,24,FontBlack,COUNTWORD4,3) // Print HEX Chars To VRAM Using Font At X,Y Position
-  //
   PrintString($A0100000,140,32,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,148,32,FontBlack,COUNTWORD5,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,156,32,FontBlack,COUNTWORD1,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,240,32,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,248,32,FontBlack,COUNTWORD6,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,300,32,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,316,32,FontBlack,COUNTWORD2,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,340,32,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,348,32,FontBlack,COUNTWORD7,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,460,32,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,476,32,FontBlack,COUNTWORD3,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,440,32,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,448,32,FontBlack,COUNTWORD8,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,140,56,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,156,56,FontBlack,COUNTWORD4,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  //
+  PrintString($A0100000,300,56,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,316,56,FontBlack,COUNTWORD5,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  //
+  PrintString($A0100000,460,56,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,476,56,FontBlack,COUNTWORD6,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  //
+  PrintString($A0100000,140,80,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,156,80,FontBlack,COUNTWORD7,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  //
+  PrintString($A0100000,300,80,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,316,80,FontBlack,COUNTWORD8,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
 
 
-  PrintString($A0100000,32,48,FontRed,FIELD2,6) // Print Text String To VRAM Using Font At X,Y Position
+  PrintString($A0100000,16,112,FontRed,FIELD2,6) // Print Text String To VRAM Using Font At X,Y Position
   lli t0,0 // T0 = Instruction Count
   la t1,VALUEWORDA // T1 = Word Data Offset
   lw t1,0(t1)      // T1 = Word Data
@@ -365,33 +368,33 @@ ClearScreen:
   sw t0,0(t1) // COUNTWORD = Word Data
 
   //
-  PrintString($A0100000,140,48,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,148,48,FontBlack,COUNTWORD1,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,140,112,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,156,112,FontBlack,COUNTWORD1,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,240,48,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,248,48,FontBlack,COUNTWORD2,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,300,112,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,316,112,FontBlack,COUNTWORD2,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,340,48,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,348,48,FontBlack,COUNTWORD3,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,460,112,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,476,112,FontBlack,COUNTWORD3,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,440,48,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,448,48,FontBlack,COUNTWORD4,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,140,136,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,156,136,FontBlack,COUNTWORD4,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,140,56,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,148,56,FontBlack,COUNTWORD5,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,300,136,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,316,136,FontBlack,COUNTWORD5,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,240,56,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,248,56,FontBlack,COUNTWORD6,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,460,136,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,476,136,FontBlack,COUNTWORD6,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,340,56,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,348,56,FontBlack,COUNTWORD7,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,140,160,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,156,160,FontBlack,COUNTWORD7,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
-  PrintString($A0100000,440,56,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
-  PrintValue($A0100000,448,56,FontBlack,COUNTWORD8,3) // Print HEX Chars To VRAM Using Font At X,Y Position
+  PrintString($A0100000,300,160,FontBlack,DOLLAR,0) // Print Text String To VRAM Using Font At X,Y Position
+  PrintValue($A0100000,316,160,FontBlack,COUNTWORD8,3) // Print HEX Chars To VRAM Using Font At X,Y Position
   //
 
 
-  PrintString($A0100000,0,360,FontBlack,PAGEBREAK,79) // Print Text String To VRAM Using Font At X,Y Position
+  PrintString($A0100000,0,360,FontBlack,PAGEBREAK,39) // Print Text String To VRAM Using Font At X,Y Position
 
 
 Loop:
@@ -419,7 +422,7 @@ DOLLAR:
   db "$"
 
 PAGEBREAK:
-  db "--------------------------------------------------------------------------------"
+  db "----------------------------------------"
 
 align(8) // Align 64-Bit
 VALUEWORDA:
@@ -446,6 +449,6 @@ COUNTWORD7:
 COUNTWORD8:
   dw 0
 
-insert FontBlack, "FontBlack8x8.bin"
-insert FontGreen, "FontGreen8x8.bin"
-insert FontRed, "FontRed8x8.bin"
+insert FontBlack, "FontBlack16x16.bin"
+insert FontGreen, "FontGreen16x16.bin"
+insert FontRed, "FontRed16x16.bin"
