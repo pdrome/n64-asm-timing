@@ -49,7 +49,7 @@ macro ScreenNTSC(width,height, status, origin) {
   sw t0,VI_V_CURRENT_LINE(a0) // Store Current Vertical Line To VI Current Register ($A4400010)
   li t0,$3E52239      // T0 = Video Timing (Start Of Color Burst In Pixels from H-Sync = 3, Vertical Sync Width In Half Lines = 229, Color Burst Width In Pixels = 34, Horizontal Sync Width In Pixels = 57)
   sw t0,VI_TIMING(a0) // Store Video Timing To VI Burst Register ($A4400014)
-  lli t0,$20D         // T0 = Vertical Sync (Number Of Half-Lines Per Field = 525)
+  lli t0,$20C         // T0 = Vertical Sync (Number Of Half-Lines Per Field = 525)
   sw t0,VI_V_SYNC(a0) // Store Vertical Sync To VI V Sync Register ($A4400018)
   lli t0,$C15         // T0 = Horizontal Sync (5-bit Leap Pattern Used For PAL only = 0, Total Duration Of A Line In 1/4 Pixel = 3093)
   sw t0,VI_H_SYNC(a0) // Store Horizontal Sync To VI H Sync Register ($A440001C)
